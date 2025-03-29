@@ -47,10 +47,16 @@ export default function Home() {
                 <span className="font-medium text-indigo-300">詩的な物語</span>に生まれ変わる。
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center md:justify-start">
+              <a
+                href="https://kanazawa-it.box.com/s/yb7l5y7urrwsx40rj2xmumd0j6ia1h21"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
                 <Button size="lg" className="bg-indigo-600 hover:bg-indigo-700 text-white">
                   <Download className="mr-2 h-5 w-5" />
                   ダウンロード
                 </Button>
+              </a>
                 <Button size="lg" className="bg-white/20 border-white/40 text-white hover:bg-white/30">
                   <Info className="mr-2 h-5 w-5" />
                   詳細を見る
