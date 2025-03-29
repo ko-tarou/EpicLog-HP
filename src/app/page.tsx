@@ -91,7 +91,7 @@ export default function Home() {
             <p className="text-lg text-gray-700 leading-relaxed">
               現代人の多くは日記をつけず、気づけば時間が過ぎていく。
               <br />
-              EpicLog はブラウザの履歴という"無意識の行動記録"を使って、
+              EpicLog はブラウザの履歴という&quot;無意識の行動記録&quot;を使って、
               <br />
               <span className="font-medium text-indigo-700">あなたの1日を詩のように記憶</span>します。
             </p>
