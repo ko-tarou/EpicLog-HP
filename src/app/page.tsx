@@ -2,497 +2,420 @@
 
 import Image from "next/image"
 import { useState } from "react"
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog"
-import { ChevronDown, ChevronUp, Menu, X } from "lucide-react"
-
-// プロジェクトデータの型定義
-interface Project {
-  title: string
-  desc: string
-  details: string
-  technologies: string[]
-}
-
-// タイムラインイベントの型定義
-interface TimelineEvent {
-  year: string
-  title: string
-  description: string
-  organization?: string
-  date?: string
-  details?: string
-  isExpanded?: boolean
-}
-
-// Project data with additional details
-const projects: Project[] = [
-  {
-    title: "LogiLink",
-    desc: "配送業者同士の連携SNSアプリ",
-    details:
-      "配送業者同士の連携をスムーズに行うためのアプリです。サプライチェーンの会社全てを繋ぎ、契約や受注などの流れを全て自動化することを目指したプロダクトです。2024年問題を解決することを目指しています。",
-    technologies: ["Android", "IOS", "Web", "AWS"],
-  },
-  {
-    title: "PresentsAI",
-    desc: "プレゼンシート作成アプリ",
-    details:
-      "プレゼン資料をAIで効率的に作ることができるWebアプリです。対象をエンジニアに絞り、コードブロック、発表の採点機能などを導入しました。プレゼンの質を向上させることを目指しています。",
-    technologies: ["Web", "Next.js", "Go", "PostgreSQL"],
-  },
-  {
-    title: "MichikusaMemo",
-    desc: "位置情報と紐付けしたメモ帳アプリ",
-    details:
-      "場所にメモを書くことのできるアプリです。旅行やカンファレンスなどで飛び回る人に向けたアプリです。SwiftUIで実装し、リリースしました。DBのクラウド化を目指しています。",
-    technologies: ["IOS", "SwiftUI", "MapKit"],
-  },
-  {
-    title: "スマプロ",
-    desc: "校内のプロジェクト活動",
-    details:
-      "2年生からリーダーを務めている。大学内のプロジェクト団体です。アプリ開発を中心に、WebやUnityなど幅広く勉強しています。",
-    technologies: ["Web", "IOS", "Android"],
-  },
-  {
-    title: "DevTree",
-    desc: "エンジニア志望向けスキルツリーアプリ",
-    details:
-      "エンジニアが自分に足りてない知識を把握するためのスキルツリーアプリです。2年生になる直前に、新入生たちに向けて開発しました。",
-    technologies: ["Android", "Kotlin", "JetpackCompose", "Room"],
-  },
-  {
-    title: "Hackit運営",
-    desc: "校内のハッカソンイベントの運営",
-    details:
-      "3つ上の代が校内で開催していたハッカソンイベントを引き継ぎ、運営を行っています。一年生向けの交流イベントです。一年生の参加者が増えるように、企画や広報を行っています。",
-    technologies: ["Notion", "Git", "Web", "Slack"],
-  },
-]
+import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
+import { Badge } from "@/components/ui/badge"
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
+import {
+  AlertCircle,
+  Check,
+  Download,
+  FileDown,
+  Github,
+  Globe,
+  Info,
+  Laptop,
+  Lock,
+  MessageSquare,
+  Shield,
+  Terminal,
+} from "lucide-react"
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 
 export default function Home() {
-  const [selectedProject, setSelectedProject] = useState<Project | null>(null)
-  const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false)
-  const [mobileMenuOpen, setMobileMenuOpen] = useState<boolean>(false)
-  const [events, setEvents] = useState<TimelineEvent[]>([
-    {
-      year: "2025",
-      title: "LogiLink開発開始",
-      description: "KITHackthonで受賞",
-      date: "3月",
-      details: "2024物流問題の解決を目指し、SNS型プラットフォームを開発しました。それぞれをネイティブで開発中です。",
-      isExpanded: false,
-    },
-    {
-      year: "2025",
-      title: "MichikusaMemoリリース",
-      description: "不登校自動を未然に防ぐアプリ開発",
-      date: "3月",
-      details:
-        "位置情報と紐付けて、メモを管理することができるアプリです。SwiftUIで実装し、リリースしました。DBのクラウド化を目指しています。",
-      isExpanded: false,
-    },
-    {
-      year: "2025",
-      title: "インターンシップ",
-      description: "KotlinでAIチャットボットアプリを開発",
-      organization: "株式会社CyberAgent",
-      date: "2月",
-      details: "MVVMやCI/CDなどの技術を学びました。良いメンターさんに巡り会え、とても良い経験になりました。",
-      isExpanded: false,
-    },
-    {
-      year: "2025",
-      title: "インターンシップ",
-      description: "Swiftのチュートリアル",
-      organization: "BetaComputing株式会社",
-      date: "1月",
-      details: "Swiftの基礎を学び、実務のお話を聞くことができました。",
-      isExpanded: false,
-    },
-    {
-      year: "2024",
-      title: "PresentAI開発",
-      description: "プレゼン資料作成アプリ",
-      date: "12月",
-      details:
-        "プレゼン資料を作成する際に、AIが自動でサポートしてくれるアプリです。これを通し、Web開発の基礎を学びました。",
-      isExpanded: false,
-    },
-    {
-      year: "2024",
-      title: "スマプロ参加",
-      description: "校内のプロジェクト活動に参加",
-      date: "4月",
-      details:
-        "ここで初めてアプリ開発に触れ、Androidアプリの開発を学びました。チームでの開発やコードレビューなど、エンジニアとしての基礎を学びました。",
-      isExpanded: false,
-    },
-    {
-      year: "2024",
-      title: "大学入学",
-      description: "金沢工業大学に入学",
-      date: "4月",
-      details: "情報工学を専攻し、プログラミングの基礎を学び始める",
-      isExpanded: false,
-    },
-  ])
-
-  const openProjectDetails = (project: Project) => {
-    setSelectedProject(project)
-    setIsDialogOpen(true)
-  }
-
-  const toggleExpand = (index: number) => {
-    setEvents(events.map((event, i) => (i === index ? { ...event, isExpanded: !event.isExpanded } : event)))
-  }
-
-  const toggleMobileMenu = () => {
-    setMobileMenuOpen(!mobileMenuOpen)
-  }
-
-  const scrollToSection = (sectionId: string) => {
-    const element = document.getElementById(sectionId)
-    if (element) {
-      element.scrollIntoView({ behavior: "smooth" })
-      setMobileMenuOpen(false)
-    }
-  }
+  const [showPermissionInfo, setShowPermissionInfo] = useState(false)
 
   return (
     <main className="min-h-screen bg-white">
-      {/* Fixed Navigation Header */}
-      <header className="fixed top-0 w-full bg-[#111827] text-white py-4 z-50 shadow-md">
-        <nav className="container mx-auto px-4 flex justify-between items-center">
-          {/* Mobile menu button */}
-          <button
-            className="md:hidden text-white focus:outline-none"
-            onClick={toggleMobileMenu}
-            aria-label={mobileMenuOpen ? "メニューを閉じる" : "メニューを開く"}
-          >
-            {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
-          </button>
-
-          {/* Desktop navigation */}
-          <div className="hidden md:block ml-auto">
-            <ul className="flex justify-end space-x-6 text-lg font-medium">
-              {["about", "skills", "projects", "timeline", "reports", "contact"].map((section) => (
-                <li key={section} className="hover:text-indigo-400 transition-colors">
-                  <button onClick={() => scrollToSection(section)}>
-                    {section.charAt(0).toUpperCase() + section.slice(1)}
-                  </button>
-                </li>
-              ))}
-            </ul>
-          </div>
-        </nav>
-
-        {/* Mobile menu */}
-        {mobileMenuOpen && (
-          <div className="md:hidden bg-[#111827] border-t border-gray-700 py-4 px-4 animate-fadeIn">
-            <ul className="flex flex-col space-y-4">
-              {["about", "skills", "projects", "timeline", "reports", "contact"].map((section) => (
-                <li key={section} className="hover:text-indigo-400 transition-colors">
-                  <button
-                    onClick={() => scrollToSection(section)}
-                    className="w-full text-left py-2 px-4 hover:bg-gray-800 rounded-md"
-                  >
-                    {section.charAt(0).toUpperCase() + section.slice(1)}
-                  </button>
-                </li>
-              ))}
-            </ul>
-          </div>
-        )}
-      </header>
-
       {/* Hero Section */}
-      <section className="pt-32 pb-20 flex flex-col items-center px-4">
-        <div className="mb-8 transform transition hover:scale-105 duration-300">
-          <Image
-            src="/monaka.png"
-            alt="プロフィール画像"
-            width={192}
-            height={192}
-            priority
-            className="w-40 h-40 md:w-48 md:h-48 rounded-full object-cover border-4 border-indigo-500 shadow-2xl"
-          />
+      <section className="relative bg-gradient-to-b from-gray-900 to-gray-800 text-white py-20 md:py-32 overflow-hidden">
+        <div className="absolute inset-0 opacity-20">
+          <div className="absolute inset-0 bg-[url('/placeholder.svg?height=800&width=1600')] bg-cover bg-center"></div>
         </div>
-
-        <h1 className="text-indigo-600 text-4xl md:text-6xl font-bold drop-shadow-lg mb-6 text-center">高岡己太朗</h1>
-      </section>
-
-      {/* About Section */}
-      <section id="about" className="py-16 bg-gray-50">
-        <div className="container mx-auto px-4">
-          <h2 className="text-3xl font-semibold text-center text-indigo-600 mb-8">About me</h2>
-          <p className="text-lg md:text-xl text-center max-w-6xl mx-auto text-gray-800 px-4">
-            金沢工業大学で情報工学を学んでいる&quot;こたろう&quot;と申します
-            <br className="hidden sm:block" />
-            最近はAndroidアプリ開発にハマっていて、技術イベントにもよく出没します。
-            <br className="hidden sm:block" />
-            コードを書いたり、最新技術を追ったりするのが好きで、つい時間を忘れてしまうタイプです。
-            <br className="hidden sm:block" />
-            猫とゲームが癒し。
-            <br className="hidden sm:block" />
-            <span className="block mt-4 mb-6">
-              夢は全言語をマスターすることです！！
-              <br className="hidden sm:block" />
-              気軽に話しかけてください！
-            </span>
-          </p>
-        </div>
-      </section>
-
-      {/* Skills Section */}
-      <section id="skills" className="py-16">
-        <div className="container mx-auto px-4">
-          <h2 className="text-3xl font-semibold text-center text-indigo-600 mb-10">Skills</h2>
-          <div className="flex justify-center flex-wrap gap-2 sm:gap-3 md:gap-4 max-w-4xl mx-auto">
-            {[
-              "Java",
-              "Jetpack Compose",
-              "SwiftUI",
-              "C",
-              "Python",
-              "Flutter",
-              "React",
-              "Next.js",
-              "Go",
-              "Kubernetes",
-              "LLM",
-              "Ruby",
-              "Unity",
-            ].map((skill) => (
-              <div
-                key={skill}
-                className="px-3 sm:px-4 md:px-6 py-2 bg-indigo-500 text-white text-sm md:text-lg rounded-full hover:bg-indigo-700 transition shadow-sm"
-              >
-                {skill}
+        <div className="container mx-auto px-4 relative z-10">
+          <div className="flex flex-col md:flex-row items-center justify-between gap-12">
+            <div className="md:w-1/2 text-center md:text-left">
+              <Badge variant="outline" className="mb-4 px-3 py-1 border-indigo-400 text-indigo-300">
+                v2.3.0 リリース
+              </Badge>
+              <h1 className="text-4xl md:text-6xl font-bold mb-6 leading-tight">
+                <span className="text-indigo-400">Epic</span>Log
+              </h1>
+              <p className="text-xl md:text-2xl mb-8 text-gray-300 font-light">
+                あなたのブラウザ履歴が、
+                <br className="md:hidden" />
+                <span className="font-medium text-indigo-300">詩的な物語</span>に生まれ変わる。
+              </p>
+              <div className="flex flex-col sm:flex-row gap-4 justify-center md:justify-start">
+                <Button size="lg" className="bg-indigo-600 hover:bg-indigo-700 text-white">
+                  <Download className="mr-2 h-5 w-5" />
+                  ダウンロード
+                </Button>
+                <Button size="lg" className="bg-white/20 border-white/40 text-white hover:bg-white/30">
+                  <Info className="mr-2 h-5 w-5" />
+                  詳細を見る
+                </Button>
               </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Projects Section */}
-      <section id="projects" className="py-16 bg-gray-50">
-        <div className="container mx-auto px-4">
-          <h2 className="text-3xl font-semibold text-center text-indigo-600 mb-8">プロジェクト</h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 max-w-6xl mx-auto">
-            {projects.map((project) => (
-              <button
-                key={project.title}
-                onClick={() => openProjectDetails(project)}
-                className="h-36 px-4 sm:px-6 py-4 sm:py-6 bg-white text-indigo-600 rounded-lg border-2 border-white shadow-xl 
-                  hover:bg-gradient-to-r hover:from-indigo-500 hover:via-indigo-600 hover:to-indigo-800 
-                  hover:text-white hover:shadow-lg hover:-translate-y-1 active:scale-95 
-                  transition transform flex flex-col items-start"
-              >
-                <span className="text-lg sm:text-xl font-bold mb-2 sm:mb-4">{project.title}</span>
-                <span className="text-sm sm:text-base text-gray-700 hover:text-white">{project.desc}</span>
-              </button>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Project Details Dialog */}
-      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        {selectedProject && (
-          <DialogContent className="sm:max-w-md max-w-[90vw] mx-4">
-            <DialogHeader>
-              <div className="flex items-center justify-between">
-                <DialogTitle className="text-xl font-bold text-indigo-600">{selectedProject.title}</DialogTitle>
-              </div>
-              <DialogDescription className="text-base font-medium text-gray-700 mt-1">
-                {selectedProject.desc}
-              </DialogDescription>
-            </DialogHeader>
-            <div className="mt-4 space-y-4">
-              <div>
-                <h3 className="text-sm font-semibold text-gray-500 mb-2">詳細</h3>
-                <p className="text-sm text-gray-700">{selectedProject.details}</p>
-              </div>
-              <div>
-                <h3 className="text-sm font-semibold text-gray-500 mb-2">使用技術</h3>
-                <div className="flex flex-wrap gap-2">
-                  {selectedProject.technologies.map((tech) => (
-                    <span key={tech} className="px-3 py-1 bg-indigo-100 text-indigo-700 text-xs rounded-full">
-                      {tech}
-                    </span>
-                  ))}
+            </div>
+            <div className="md:w-1/2 flex justify-center">
+              <div className="relative w-full max-w-md">
+                <div className="bg-gradient-to-tr from-indigo-600 to-purple-600 rounded-2xl shadow-2xl p-1">
+                  <div className="bg-gray-900 rounded-xl overflow-hidden">
+                    <Image
+                      src="/placeholder.svg?height=600&width=800"
+                      alt="EpicLogアプリのスクリーンショット"
+                      width={800}
+                      height={600}
+                      className="w-full h-auto"
+                      priority
+                    />
+                  </div>
+                </div>
+                <div className="absolute -bottom-6 -right-6 bg-indigo-600 text-white rounded-full p-4 shadow-lg">
+                  <Shield className="h-6 w-6" />
                 </div>
               </div>
             </div>
-          </DialogContent>
-        )}
-      </Dialog>
+          </div>
+        </div>
+      </section>
 
-      {/* Timeline Section */}
-      <section id="timeline" className="py-16 bg-gray-50">
+      {/* Concept Section */}
+      <section className="py-16 md:py-24 bg-gray-50">
         <div className="container mx-auto px-4">
-          <h2 className="text-3xl font-semibold text-center text-indigo-600 mb-10">これまでの活動</h2>
-          <div className="max-w-5xl mx-auto">
-            <div className="relative">
-              {/* Timeline center line - hidden on mobile, visible on md and up */}
-              <div className="hidden md:block absolute left-1/2 top-0 bottom-0 w-1 bg-indigo-500 transform -translate-x-1/2"></div>
+          <div className="max-w-3xl mx-auto text-center mb-12">
+            <Badge className="mb-4 bg-indigo-100 text-indigo-800 hover:bg-indigo-200">コンセプト</Badge>
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-6">
+              「日記を書かなくても、1日がちゃんと記録されてる。」
+            </h2>
+            <p className="text-lg text-gray-700 leading-relaxed">
+              現代人の多くは日記をつけず、気づけば時間が過ぎていく。
+              <br />
+              EpicLog はブラウザの履歴という"無意識の行動記録"を使って、
+              <br />
+              <span className="font-medium text-indigo-700">あなたの1日を詩のように記憶</span>します。
+            </p>
+          </div>
+        </div>
+      </section>
 
-              {/* Timeline events */}
-              {events.map((event, index) => {
-                const isEven = index % 2 === 0
+      {/* Features Section */}
+      <section className="py-16 md:py-24">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-16">
+            <Badge className="mb-4 bg-indigo-100 text-indigo-800 hover:bg-indigo-200">主な機能</Badge>
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-900">
+              あなたの日常を<span className="text-indigo-600">物語</span>に
+            </h2>
+          </div>
 
-                return (
-                  <div key={index} className="mb-8 md:mb-12 relative flex justify-center items-start">
-                    {/* Year marker in center - only visible on md screens and up */}
-                    <div className="hidden md:flex absolute left-1/2 -translate-x-1/2 w-8 h-8 rounded-full bg-indigo-500 border-4 border-white z-10 items-center justify-center text-xs text-white font-bold">
-                      {event.year.slice(-2)}
-                    </div>
-
-                    {/* Content positioning - full width on mobile, alternating on desktop */}
-                    <div
-                      className={`w-full md:w-5/12 ${
-                        isEven ? "md:ml-auto pl-10 md:pl-0 md:pr-8" : "md:mr-auto pl-10 md:pl-8"
-                      } relative`}
-                    >
-                      {/* Event content */}
-                      <div className="bg-white rounded-lg shadow-md overflow-hidden">
-                        <div className="bg-indigo-600 text-white px-4 sm:px-6 py-3 flex justify-between items-center">
-                          <span className="font-medium">{event.year}</span>
-                          <button
-                            onClick={() => toggleExpand(index)}
-                            className="text-white hover:bg-indigo-800 rounded-full p-1"
-                            aria-label={event.isExpanded ? "折りたたむ" : "展開する"}
-                          >
-                            {event.isExpanded ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
-                          </button>
-                        </div>
-
-                        <div className="p-4 sm:p-6">
-                          <h3 className="font-bold text-base sm:text-lg mb-2 text-gray-800">{event.title}</h3>
-                          <p className="text-xs sm:text-sm mb-4 text-gray-700">{event.description}</p>
-
-                          {event.organization && (
-                            <div className="bg-indigo-500 text-white text-xs sm:text-sm rounded-md shadow-md p-2 sm:p-3 text-center mb-3">
-                              {event.organization}
-                            </div>
-                          )}
-
-                          {event.date && (
-                            <div className="text-xs">
-                              <span className="text-indigo-600 font-medium">{event.date}</span>
-                            </div>
-                          )}
-
-                          {event.isExpanded && event.details && (
-                            <div className="mt-4 text-xs sm:text-sm bg-gray-100 p-3 sm:p-4 rounded-md border border-gray-200">
-                              {event.details}
-                            </div>
-                          )}
-                        </div>
-                      </div>
-
-                      {/* Mobile timeline dot */}
-                      <div className="absolute top-4 left-0 w-4 h-4 rounded-full bg-indigo-500 border-2 border-white md:hidden"></div>
-
-                      {/* Mobile year marker */}
-                      <div className="absolute top-3 left-0 w-6 h-6 flex items-center justify-center md:hidden">
-                        <span className="text-[10px] font-bold text-white">{event.year.slice(-2)}</span>
-                      </div>
-                    </div>
-
-                    {/* Connector line to center - only visible on desktop */}
-                    <div
-                      className={`hidden md:block absolute top-4 h-0.5 bg-indigo-600 w-[calc(25%-4px)] ${
-                        isEven ? "left-[calc(50%+4px)]" : "right-[calc(50%+4px)]"
-                      }`}
-                    ></div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+            {[
+              {
+                icon: <Globe className="h-8 w-8 text-indigo-600" />,
+                title: "履歴自動収集",
+                description: "過去24時間のブラウザ履歴を非侵襲的に取得します。Safari、Chrome、Edgeに対応。",
+              },
+              {
+                icon: <MessageSquare className="h-8 w-8 text-indigo-600" />,
+                title: "AIによる要約",
+                description: "Qwen2.5-7B-Instructによる詩的なストーリー生成。最大100文字の感情豊かな表現。",
+              },
+              {
+                icon: <Lock className="h-8 w-8 text-indigo-600" />,
+                title: "完全ローカル実行",
+                description: "モデルもデータも全てユーザーのPC上で処理。プライバシーを最大限に尊重します。",
+              },
+              {
+                icon: <Laptop className="h-8 w-8 text-indigo-600" />,
+                title: "クロスプラットフォーム",
+                description: "現在はmacOS対応。Windows版も近日公開予定です。",
+              },
+            ].map((feature, index) => (
+              <Card key={index} className="border-none shadow-lg hover:shadow-xl transition-shadow">
+                <CardHeader className="pb-2">
+                  <div className="mb-4 bg-indigo-100 w-16 h-16 rounded-xl flex items-center justify-center">
+                    {feature.icon}
                   </div>
-                )
-              })}
+                  <CardTitle className="text-xl">{feature.title}</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-gray-600">{feature.description}</p>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Tech Stack Section */}
+      <section className="py-16 md:py-24 bg-gray-50">
+        <div className="container mx-auto px-4">
+          <div className="max-w-4xl mx-auto">
+            <div className="text-center mb-12">
+              <Badge className="mb-4 bg-indigo-100 text-indigo-800 hover:bg-indigo-200">技術構成</Badge>
+              <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-6">最先端技術の組み合わせ</h2>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {[
+                {
+                  title: "Electron",
+                  description: "クロスプラットフォームのデスクトップアプリ",
+                },
+                {
+                  title: "llama.cpp",
+                  description: "ローカルLLM推論エンジン（Apple Silicon Metal対応）",
+                },
+                {
+                  title: "Qwen2.5-7B-Instruct",
+                  description: "LLMモデル（GGUF形式 / quantized）",
+                },
+                {
+                  title: "SQLite3",
+                  description: "ブラウザ履歴取得用ローカルDBアクセス",
+                },
+                {
+                  title: "Day.js",
+                  description: "日時整形ライブラリ",
+                },
+              ].map((tech, index) => (
+                <div key={index} className="flex items-start p-4 bg-white rounded-lg shadow-md">
+                  <div className="bg-indigo-100 p-2 rounded-md mr-4">
+                    <Terminal className="h-5 w-5 text-indigo-600" />
+                  </div>
+                  <div>
+                    <h3 className="font-medium text-gray-900">{tech.title}</h3>
+                    <p className="text-sm text-gray-600">{tech.description}</p>
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
         </div>
       </section>
 
-      {/* Reports Section */}
-      <section id="reports" className="py-16">
+      {/* Download Section */}
+      <section className="py-16 md:py-24 bg-indigo-900 text-white">
         <div className="container mx-auto px-4">
-          <h2 className="text-3xl font-semibold text-center text-indigo-600 mb-8">レポート</h2>
-          <div className="max-w-2xl mx-auto">
-            <a
-              href="https://note.com/kota28/n/n664275bb1967"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="block text-gray-700 underline py-2 hover:text-indigo-600 transition-colors text-xs sm:text-sm"
+          <div className="max-w-4xl mx-auto text-center">
+            <Badge variant="outline" className="mb-6 border-indigo-400 text-indigo-200 hover:bg-indigo-800/30">
+              ダウンロード
+            </Badge>
+            <h2 className="text-3xl md:text-4xl font-bold mb-8">EpicLog を今すぐ試す</h2>
+
+            <Card className="bg-white/10 backdrop-blur-sm border-none shadow-2xl mb-8">
+              <CardHeader>
+                <CardTitle className="text-2xl text-white">最新バージョン</CardTitle>
+                <CardDescription className="text-indigo-200">EpicLog v2.3.0 - macOS対応</CardDescription>
+              </CardHeader>
+              <CardContent className="text-center">
+                <div className="flex items-center justify-center mb-4">
+                  <Badge variant="secondary" className="mr-2 bg-indigo-800 text-white">
+                    23GB
+                  </Badge>
+                  <Badge variant="secondary" className="bg-indigo-800 text-white">
+                    .dmg
+                  </Badge>
+                </div>
+                <p className="text-sm text-indigo-200 mb-6">
+                  インストール後、初回起動時に「フルディスクアクセス」の許可が必要です。
+                </p>
+              </CardContent>
+              <CardFooter className="flex justify-center pb-6">
+                <Button size="lg" className="bg-white text-indigo-900 hover:bg-indigo-100">
+                  <FileDown className="mr-2 h-5 w-5" />
+                  <a
+                    href="https://kanazawa-it.box.com/s/yb7l5y7urrwsx40rj2xmumd0j6ia1h21"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    ダウンロード（Box）
+                  </a>
+                </Button>
+              </CardFooter>
+            </Card>
+
+            <Button
+              className="bg-white/20 border-white/40 text-white hover:bg-white/30"
+              onClick={() => setShowPermissionInfo(!showPermissionInfo)}
             >
-              ・「アーキテクチャって何？」から始まったインターンの学び
-            </a>
-            <a
-              href="https://qiita.com/ko-tarou/items/09130bb977fb9fa798d4"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="block text-gray-700 underline py-2 hover:text-indigo-600 transition-colors text-xs sm:text-sm"
-            >
-              ・Kubectl AIの使い方
-            </a>
-            <a
-              href="https://qiita.com/ko-tarou/items/17bc649c20c3d9257712"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="block text-gray-700 underline py-2 hover:text-indigo-600 transition-colors text-xs sm:text-sm"
-            >
-              ・後輩のためのFigma入門
-            </a>
-            
-            <a
-              href="https://qiita.com/ko-tarou/items/252b48ce0dc375ab2657"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="block text-gray-700 underline py-2 hover:text-indigo-600 transition-colors text-xs sm:text-sm"
-            >
-              ・WebGPUを使ってAI推論を高速化してみた!
-            </a>
-            <a
-              href="https://qiita.com/ko-tarou/items/6e3bba14c7259118cc36"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="block text-gray-700 underline py-2 hover:text-indigo-600 transition-colors text-xs sm:text-sm"
-            >
-              ・Wallpaper EngineをPythonで再現？Pygameで作るアニメーション壁紙
-            </a>
+              <Info className="mr-2 h-4 w-4" />
+              フルディスクアクセスについて
+            </Button>
+
+            {showPermissionInfo && (
+              <Alert className="mt-6 bg-white/20 border-white/40 text-white text-left">
+                <AlertCircle className="h-4 w-4" />
+                <AlertTitle className="text-white font-medium">フルディスクアクセスについて</AlertTitle>
+                <AlertDescription className="text-white/90">
+                  <p className="mb-2">
+                    EpicLogはブラウザ履歴を読み取るために、macOSの「フルディスクアクセス」権限が必要です。
+                    この権限はSafariなどのブラウザの履歴データベースにアクセスするために使用されます。
+                  </p>
+                  <p>
+                    すべてのデータ処理はローカルで行われ、外部に送信されることはありません。
+                    権限は「システム設定」→「プライバシーとセキュリティ」→「フルディスクアクセス」から設定できます。
+                  </p>
+                </AlertDescription>
+              </Alert>
+            )}
           </div>
         </div>
       </section>
 
-      {/* Contact Section */}
-      <section id="contact" className="py-16">
-        <div className="container mx-auto px-4 text-center">
-          <h2 className="text-3xl font-semibold text-indigo-600 mb-8">Contact</h2>
-          <p className="text-lg mb-6 text-gray-700">お問い合わせはこちらから</p>
-          <div className="flex flex-col sm:flex-row justify-center space-y-4 sm:space-y-0 sm:space-x-6">
-            <a
-              href="mailto:akokoa1221@gmail.com"
-              className="bg-indigo-600 text-white px-6 py-3 rounded-full hover:bg-indigo-700 transition shadow-md"
-            >
-              メールを送る
-            </a>
-            <a
-              href="https://x.com/monaka_12"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="bg-gray-800 text-white px-6 py-3 rounded-full hover:bg-gray-900 transition shadow-md"
-            >
-              SNSで繋がる
-            </a>
+      {/* FAQ Section */}
+      <section className="py-16 md:py-24">
+        <div className="container mx-auto px-4">
+          <div className="max-w-3xl mx-auto">
+            <div className="text-center mb-12">
+              <Badge className="mb-4 bg-indigo-100 text-indigo-800 hover:bg-indigo-200">FAQ</Badge>
+              <h2 className="text-3xl md:text-4xl font-bold text-gray-900">よくある質問</h2>
+            </div>
+
+            <Accordion type="single" collapsible className="w-full">
+              {[
+                {
+                  question: "なぜファイルサイズが大きいのですか？",
+                  answer:
+                    "EpicLogには高性能なAIモデル（Qwen2.5-7B-Instruct）が含まれているため、ファイルサイズが約23GBと大きくなっています。これにより、インターネット接続なしでもAI機能を利用できます。将来的にはモデルを外部からダウンロードする方式も検討しています。",
+                },
+                {
+                  question: "プライバシーは守られますか？",
+                  answer:
+                    "はい。EpicLogはすべての処理をローカルで行い、あなたのデータが外部に送信されることはありません。ブラウザ履歴の読み取りと、AIによる処理はすべてあなたのコンピュータ上で完結します。",
+                },
+                {
+                  question: "Windows版はいつリリースされますか？",
+                  answer:
+                    "Windows版は現在開発中で、近日中にリリース予定です。正確な日程は決まり次第、公式サイトでお知らせします。",
+                },
+                {
+                  question: "フルディスクアクセス権限は安全ですか？",
+                  answer:
+                    "フルディスクアクセス権限はブラウザの履歴データベースにアクセスするために必要です。EpicLogはこの権限を履歴の読み取りにのみ使用し、他の目的では使用しません。すべての処理はローカルで行われ、データが外部に送信されることはありません。",
+                },
+                {
+                  question: "生成される物語はどのようなものですか？",
+                  answer:
+                    "あなたのブラウザ履歴から、その日の活動を反映した最大100文字程度の詩的な短い物語が生成されます。感情表現を含み、あなたの1日を独自の視点で表現します。",
+                },
+              ].map((faq, index) => (
+                <AccordionItem key={index} value={`item-${index}`}>
+                  <AccordionTrigger className="text-left font-medium text-gray-900">{faq.question}</AccordionTrigger>
+                  <AccordionContent className="text-gray-700">{faq.answer}</AccordionContent>
+                </AccordionItem>
+              ))}
+            </Accordion>
+          </div>
+        </div>
+      </section>
+
+      {/* Roadmap Section */}
+      <section className="py-16 md:py-24 bg-gray-50">
+        <div className="container mx-auto px-4">
+          <div className="max-w-4xl mx-auto">
+            <div className="text-center mb-12">
+              <Badge className="mb-4 bg-indigo-100 text-indigo-800 hover:bg-indigo-200">ロードマップ</Badge>
+              <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-6">今後の予定</h2>
+            </div>
+
+            <div className="space-y-8">
+              {[
+                {
+                  title: "Windows版対応",
+                  description: "Windows環境でもEpicLogを利用できるようにします。",
+                  status: "開発中",
+                },
+                {
+                  title: "モデルの外部ダウンロード対応",
+                  description: "アプリ本体を軽量化し、初回起動時にAIモデルをダウンロードする方式を導入します。",
+                  status: "計画中",
+                },
+                {
+                  title: "モバイル通知機能",
+                  description: "生成されたストーリーをモバイルデバイスに通知する機能を追加します。",
+                  status: "検討中",
+                },
+                {
+                  title: "ストーリー保存・共有機能",
+                  description: "生成されたストーリーを保存し、必要に応じて共有できる機能を追加します。",
+                  status: "計画中",
+                },
+              ].map((item, index) => (
+                <div key={index} className="flex items-start bg-white p-6 rounded-lg shadow-md">
+                  <div className="mr-4 mt-1">
+                    <div className="w-6 h-6 rounded-full bg-indigo-100 flex items-center justify-center">
+                      <Check className="h-4 w-4 text-indigo-600" />
+                    </div>
+                  </div>
+                  <div className="flex-1">
+                    <div className="flex items-center justify-between mb-2">
+                      <h3 className="font-medium text-lg text-gray-900">{item.title}</h3>
+                      <Badge variant="outline" className="bg-indigo-100 text-indigo-800 border-none">
+                        {item.status}
+                      </Badge>
+                    </div>
+                    <p className="text-gray-600">{item.description}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </section>
 
       {/* Footer */}
-      <footer className="bg-[#111827] text-white py-6">
-        <div className="container mx-auto px-4 text-center">
-          <p>© 2025 高岡己太郎 All Rights Reserved.</p>
+      <footer className="bg-gray-900 text-white py-12">
+        <div className="container mx-auto px-4">
+          <div className="max-w-6xl mx-auto">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+              <div>
+                <h3 className="text-xl font-bold mb-4">EpicLog</h3>
+                <p className="text-gray-400 mb-4">あなたのブラウザ履歴が、詩的な物語に生まれ変わる。</p>
+                <div className="flex space-x-4">
+                  <a href="#" className="text-gray-400 hover:text-white transition-colors">
+                    <Github className="h-5 w-5" />
+                  </a>
+                </div>
+              </div>
+
+              <div>
+                <h3 className="text-lg font-medium mb-4">リンク</h3>
+                <ul className="space-y-2">
+                  <li>
+                    <a href="#" className="text-gray-400 hover:text-white transition-colors">
+                      ダウンロード
+                    </a>
+                  </li>
+                  <li>
+                    <a href="#" className="text-gray-400 hover:text-white transition-colors">
+                      プライバシーポリシー
+                    </a>
+                  </li>
+                  <li>
+                    <a href="#" className="text-gray-400 hover:text-white transition-colors">
+                      利用規約
+                    </a>
+                  </li>
+                </ul>
+              </div>
+
+              <div>
+                <h3 className="text-lg font-medium mb-4">技術協力</h3>
+                <ul className="space-y-2">
+                  <li className="text-gray-400">OpenAI</li>
+                  <li className="text-gray-400">llama.cpp</li>
+                  <li className="text-gray-400">Alibaba Qwen Team</li>
+                </ul>
+              </div>
+            </div>
+
+            <div className="border-t border-gray-800 mt-8 pt-8 text-center text-gray-500">
+              <p>© 2025 EpicLog. All Rights Reserved.</p>
+              <p className="mt-2 text-sm">開発者: @kota</p>
+            </div>
+          </div>
         </div>
       </footer>
     </main>
