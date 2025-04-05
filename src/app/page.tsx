@@ -48,14 +48,12 @@ export default function Home() {
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center md:justify-start">
               <a
-                href="https://kanazawa-it.box.com/s/yb7l5y7urrwsx40rj2xmumd0j6ia1h21"
-                target="_blank"
-                rel="noopener noreferrer"
+                href="https://drive.google.com/uc?export=download&id=1T3wT9_8ZPPRxqS0ZutIJuA3j5Wt5ZL4C"
+                download
               >
-                <Button size="lg" className="bg-indigo-600 hover:bg-indigo-700 text-white">
-                  <Download className="mr-2 h-5 w-5" />
+                <button className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded">
                   ダウンロード
-                </Button>
+                </button>
               </a>
                 <Button size="lg" className="bg-white/20 border-white/40 text-white hover:bg-white/30">
                   <Info className="mr-2 h-5 w-5" />
